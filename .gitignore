@@ -1,0 +1,66 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+*.manifest
+*.spec
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_convert/
+
+# Logs
+*.log
+logs/
+nohup.out
+
+# -------------------------
+# OS / Editor cruft
+# -------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# -------------------------
+# Project specific
+# -------------------------
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Vector DB indexes & caches
+index/faiss/
+index/qdrant/
+index/milvus/
+index/weaviate/
+data/cache/
+
+# Model weights (if downloaded locally)
+*.bin
+*.pt
+*.ckpt
+*.onnx
+
+# PDF/PPT scratch or temp files
+*.pdf~
+*.pptx~
+.env
