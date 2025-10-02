@@ -4,15 +4,16 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from dsrag.knowledge_base import KnowledgeBase
-from dsrag.embedding import OpenAIEmbedding
+from dsrag.embedding import OpenAIEmbedding,BGEEmbedding
 from dsrag.dsparse.file_parsing.non_vlm_file_parsing import extract_text_from_pdf, extract_text_from_docx
 from dsrag.reranker import CohereReranker
+
 document_directory = "./data"
 kb_id = "database_docs"
 
 
 
-embedding_model = OpenAIEmbedding()
+embedding_model = BGEEmbedding()
 reranker_model = CohereReranker()
 
 kb = KnowledgeBase(kb_id, embedding_model=embedding_model, exists_ok=False, reranker=reranker_model)

@@ -5,12 +5,20 @@ from dsrag.database.chat_thread.basic_db import BasicChatThreadDB
 from dsrag.knowledge_base import KnowledgeBase
 from dsrag.reranker import NoReranker
 from datetime import datetime
+from dsrag.embedding import OpenAIEmbedding
+from dsrag.reranker import CohereReranker
 import gradio as gr
+
+embedding_model = OpenAIEmbedding()
+reranker_model = CohereReranker()
 
 # --- Knowledge Base setup ---
 kb_id = "database_docs"
-kb = KnowledgeBase(kb_id)  # Assumes KB is already created and saved
+kb = KnowledgeBase(kb_id, embedding_model=embedding_model, exists_ok=True, reranker=reranker_model)
 chat_db = BasicChatThreadDB()
+
+
+
 
 # --- Chat parameters ---
 chat_params = ChatThreadParams(
@@ -70,11 +78,29 @@ def upload_document(file_path):
 
 # --- Delete KB ---
 def delete_kb():
+    global kb, chat_db, thread_id  # important so we can reassign them
+
     try:
+        # Delete old KB + chat
         kb.delete()
-        return "Knowledge base deleted."
+        chat_db.delete_chat_thread(thread_id=thread_id)
+
+        # Recreate KB
+        kb = KnowledgeBase(
+            kb_id,
+            embedding_model=embedding_model,
+            exists_ok=True,
+            reranker=reranker_model
+        )
+
+        # Recreate chat DB + thread
+        chat_db = BasicChatThreadDB()
+        thread_id = create_new_chat_thread(chat_params, chat_db)
+
+        return "Knowledge base has been reset. A new KB and chat thread are ready."
     except Exception as e:
         return f"Error deleting knowledge base: {e}"
+
 
 # --- Gradio UI ---
 with gr.Blocks() as demo:
@@ -90,7 +116,7 @@ with gr.Blocks() as demo:
                 type="filepath"  # <--- important
             )
             upload_output = gr.Textbox(label="Upload status")
-            del_btn = gr.Button("Delete Knowledge Base", variant="stop")
+            del_btn = gr.Button("Reset Knowledge Base", variant="stop")
             del_output = gr.Textbox(label="Delete status")
     response_box = gr.Textbox(label="Response", lines=10)
 
